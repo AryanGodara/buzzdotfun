@@ -27,7 +27,7 @@ export async function GET() {
       tagline: "Create buzz. Build credit.",
       tags: ["social", "defi", "creator-lending", "credit", "community"],
       primaryCategory: "social",
-      buttonTitle: "Launch Template",
+      buttonTitle: "Check your buzz?",
       splashImageUrl: `${APP_URL}/splash.png`,
       splashBackgroundColor: "#ffffff",
       webhookUrl: `${APP_URL}/api/webhook`,
