@@ -1,0 +1,50 @@
+# Full reference: https://getfoundry.sh/config/reference/README/
+# Defaults: https://getfoundry.sh/config/reference/default-config/
+
+[profile.default]
+# The default profile is always applied, even if a specific profile is specified.
+
+# For Prague hardfork + enables transient variables support.
+solc_version = "0.8.30"
+
+optimizer = true
+optimizer_runs = 20000
+via_ir = true
+
+ignored_warnings_from = ["node_modules", "lib", "src/deploy", "src/scripts", "src/test"]
+
+evm_version = "prague"
+
+# Needed to write from the deploy scripts.
+fs_permissions = [
+    { access = "write", path = "./out/deployment.json" },
+    { access = "write", path = "./out/abiMap.json" },
+]
+
+# Formatter Options
+line_width = 120
+
+[profile.upgrade]
+# Flags needed for OpenZeppelin upgrade validation.
+ffi = true
+ast = true
+build_info = true
+extra_output = ["storageLayout"]
+
+# Documentation generation configuration
+[doc]
+title = "Boop Documentation"
+out = "docs"
+# Ignore everything except the boop directory
+ignore = [
+    "src/deploy/**/*.sol",
+    "src/mocks/**/*.sol",
+    "src/scripts/**/*.sol",
+    "src/randomness/**/*.sol",
+    "src/test/**/*.sol",
+    "src/*.sol"
+]
+
+[profile.ci]
+# Gives super verbose output by default (-vvvv) when running tests on CI.
+verbosity = 4
