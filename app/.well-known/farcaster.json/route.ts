@@ -18,10 +18,10 @@ export async function GET() {
       primaryCategory: 'social',
       tags: [
         'social',
-        'community',
-        'creator',
         'defi',
-        'finance'
+        'creator-lending',
+        'credit',
+        'community'
       ],
       tagline: 'Create buzz. Build credit.'
     },
