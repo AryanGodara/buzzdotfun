@@ -10,13 +10,16 @@ interface CreatorScoreContextType {
   metricsLoading: boolean
   metricsError: string | null
   showScore: boolean
-  showConfetti: boolean
+  showLoading: boolean
+  activeTab: string
 
   // Actions
   calculateScore: () => number
   fetchUserMetrics: () => Promise<void>
   handleCalculateScore: () => Promise<void>
+  handleLoadingComplete: () => Promise<void>
   handleHomeClick: () => void
+  handleTabChange: (tab: string) => void
 
   // User data
   user: any
@@ -49,7 +52,8 @@ export function CreatorScoreProvider({ children }: CreatorScoreProviderProps) {
   const [metricsLoading, setMetricsLoading] = useState(false)
   const [metricsError, setMetricsError] = useState<string | null>(null)
   const [showScore, setShowScore] = useState(false)
-  const [showConfetti, setShowConfetti] = useState(false)
+  const [showLoading, setShowLoading] = useState(false)
+  const [activeTab, setActiveTab] = useState('home')
 
   // Calculate a score based on metrics
   const calculateScore = (): number => {
@@ -113,35 +117,52 @@ export function CreatorScoreProvider({ children }: CreatorScoreProviderProps) {
 
       const data = await response.json()
 
-      if (data && data.metrics) {
+      if (data?.metrics) {
         setMetrics(data.metrics)
         setMetricsLoading(false)
         setShowScore(true)
-        setShowConfetti(true)
       } else {
         setMetrics(generateMockMetrics(user.fid))
         setMetricsLoading(false)
         setShowScore(true)
-        setShowConfetti(true)
       }
     } catch (err) {
       console.error('Error fetching user metrics:', err)
       setMetrics(generateMockMetrics(user.fid))
       setMetricsLoading(false)
       setShowScore(true)
-      setShowConfetti(true)
     }
   }
 
   const handleCalculateScore = async (): Promise<void> => {
+    setShowLoading(true)
+    // The loading component will handle the timeout and call onComplete
+  }
+
+  const handleLoadingComplete = async (): Promise<void> => {
+    setShowLoading(false)
     await fetchUserMetrics()
   }
 
   const handleHomeClick = (): void => {
     setShowScore(false)
+    setShowLoading(false)
     setMetrics(null)
     setMetricsError(null)
-    setShowConfetti(false)
+    setActiveTab('home')
+  }
+
+  const handleTabChange = (tab: string): void => {
+    setActiveTab(tab)
+    if (tab === 'home') {
+      setShowScore(false)
+      setShowLoading(false)
+    }
+    // Reset score display when switching to other tabs
+    if (tab !== 'home') {
+      setShowScore(false)
+      setShowLoading(false)
+    }
   }
 
   const value: CreatorScoreContextType = {
@@ -150,13 +171,16 @@ export function CreatorScoreProvider({ children }: CreatorScoreProviderProps) {
     metricsLoading,
     metricsError,
     showScore,
-    showConfetti,
+    showLoading,
+    activeTab,
 
     // Actions
     calculateScore,
     fetchUserMetrics,
     handleCalculateScore,
+    handleLoadingComplete,
     handleHomeClick,
+    handleTabChange,
 
     // User data
     user,

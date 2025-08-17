@@ -4,9 +4,13 @@
 // import { FarcasterUserInfo } from '@/components/FarcasterUserInfo'; // Unused - moved to .unused
 import { ClientOnlyWallet } from '@/components/ClientOnlyWallet'
 import Link from 'next/link'
-import { MetricsDisplay } from '@/components/MetricsDisplay'
-import { Confetti } from '@/components/Confetti'
+import { ScoreDisplay } from '@/components/ScoreDisplay'
+import { ScoreLoading } from '@/components/ScoreLoading'
+import { WaitlistPage } from '@/components/WaitlistPage'
+import { LeaderboardPage } from '@/components/LeaderboardPage'
+import { BottomNavigation } from '@/components/BottomNavigation'
 import { useCreatorScore } from '@/components/CreatorScoreProvider'
+import { useCTAFrameShare } from '@/components/CTAFrame'
 import { sdk } from '@farcaster/miniapp-sdk'
 
 // Component to display app name/logo
@@ -33,31 +37,28 @@ export function BuzzApp() {
     metricsLoading,
     metricsError,
     showScore,
-    showConfetti,
+    showLoading,
+    activeTab,
     calculateScore,
     handleCalculateScore,
+    handleLoadingComplete,
     handleHomeClick,
+    handleTabChange,
     user,
   } = useCreatorScore()
 
+  const { shareScoreFrame, shareWaitlistFrame } = useCTAFrameShare()
+
   const handleShareScore = async () => {
     const score = calculateScore()
-    const shareText = `Just calculated my Creator Score: ${score}/100! 🚀\n\nGet better loan rates based on your social activity at buzz.fun 💰\n\n#CreatorEconomy #DeFi`
-
-    try {
-      await sdk.actions.openUrl(
-        `https://warpcast.com/~/compose?text=${encodeURIComponent(shareText)}`,
-      )
-    } catch (error) {
-      console.error('Failed to compose cast:', error)
-    }
+    await shareScoreFrame(score)
   }
 
   const score = calculateScore()
 
   return (
     <div
-      className="min-h-screen flex flex-col"
+      className="min-h-screen flex flex-col pb-12"
       style={{ backgroundColor: '#D7FF7B' }}
     >
       <header className="flex justify-between items-center p-4 border-b border-gray-200">
@@ -65,8 +66,16 @@ export function BuzzApp() {
         <ClientOnlyWallet />
       </header>
 
-      <main className="flex-1 px-4 py-4 max-w-md mx-auto w-full flex flex-col">
-        {!showScore ? (
+      <main className="flex-1 px-4 py-4 max-w-md mx-auto w-full flex flex-col pb-24">
+        {activeTab === 'loans' ? (
+          <WaitlistPage />
+        ) : activeTab === 'leaderboard' ? (
+          <LeaderboardPage />
+        ) : showLoading ? (
+          <div className="mt-6">
+            <ScoreLoading onComplete={handleLoadingComplete} />
+          </div>
+        ) : !showScore ? (
           <>
             {/* Main Heading */}
             <div className="mt-6 mb-8 text-center">
@@ -111,8 +120,7 @@ export function BuzzApp() {
             </div>
           </>
         ) : (
-          <div className="mt-6">
-            <Confetti trigger={showConfetti} />
+          <div className="mt-1">
             <div className="text-center mb-6"></div>
 
             {metricsError ? (
@@ -127,7 +135,7 @@ export function BuzzApp() {
               </div>
             ) : (
               <div className="w-full text-center">
-                <MetricsDisplay metrics={metrics} score={score} />
+                <ScoreDisplay score={score} />
 
                 <div
                   className="border-2 border-black p-4 mb-4 rounded-md"
@@ -165,52 +173,40 @@ export function BuzzApp() {
                   Join {Math.floor(Math.random() * 5000)} creators who've
                   unlocked better loan rates
                 </p>
-
-                <div
-                  className="text-center mb-4 border-2 border-black p-3 rounded-md"
-                  style={{ backgroundColor: '#D7FF7B' }}
-                >
-                  <p className="text-sm font-bold mb-1">
-                    {Math.floor(Math.random() * 10)} friends are already playing
-                  </p>
-                  <p className="text-gray-800 text-xs font-medium">
-                    @friend1 @friend2 @friend3
-                  </p>
-                </div>
-
-                <button
-                  onClick={handleShareScore}
-                  className="w-full border-2 border-black p-3 text-center text-base font-bold text-white hover:brightness-110 transition-all rounded-md mb-3"
-                  style={{
-                    backgroundColor: '#FF6B35',
-                    boxShadow: '3px 3px 0px rgba(0,0,0,0.3)',
-                  }}
-                >
-                  🚀 SHARE MY SCORE
-                </button>
-
-                <Link href="/waitlist">
-                  <button
-                    className="w-full border-2 border-black p-3 text-center text-base font-bold text-white hover:brightness-110 transition-all rounded-md mb-4"
-                    style={{
-                      backgroundColor: '#4D61F4',
-                      boxShadow: '3px 3px 0px rgba(0,0,0,0.3)',
-                    }}
-                  >
-                    BIG THINGS COMING SOON
-                  </button>
-                </Link>
               </div>
             )}
           </div>
         )}
       </main>
 
-      <footer className="mt-auto py-4 flex justify-center w-full border-t border-gray-100">
-        <div className="text-[var(--app-foreground-muted)] text-xs">
-          Somurie ~Aryan
+      {/* Floating Bottom Buttons - Only show when score is displayed and not on loans tab */}
+      {showScore && !metricsError && activeTab !== 'loans' && (
+        <div className="fixed bottom-16 left-4 right-4 flex gap-3">
+          <button
+            onClick={handleShareScore}
+            className="flex-1 border-4 border-black p-4 text-center text-base font-bold text-white hover:brightness-110 transition-all rounded-xl"
+            style={{
+              backgroundColor: '#FF6B35',
+              boxShadow: '8px 8px 0px rgba(0,0,0,1)',
+            }}
+          >
+            🚀 Share Score
+          </button>
+          <button
+            onClick={() => console.log('Mint NFT - Coming Soon!')}
+            className="flex-1 border-4 border-black p-4 text-center text-base font-bold text-black hover:bg-gray-100 transition-all rounded-xl"
+            style={{
+              backgroundColor: 'white',
+              boxShadow: '8px 8px 0px rgba(0,0,0,1)',
+            }}
+          >
+            Mint NFT
+          </button>
         </div>
-      </footer>
+      )}
+
+      {/* Bottom Navigation */}
+      <BottomNavigation activeTab={activeTab} onTabChange={handleTabChange} />
     </div>
   )
 }

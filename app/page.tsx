@@ -22,7 +22,8 @@ export async function generateMetadata(): Promise<Metadata> {
     title: 'Buzz.fun',
     openGraph: {
       title: 'Buzz.fun',
-      description: 'Are you buzzing enough? Check your creator score, compare with friends, and unlock funding based on your social influence. Top creators get the best rates. See where you stand!',
+      description:
+        'Are you buzzing enough? Check your creator score, compare with friends, and unlock funding based on your social influence. Top creators get the best rates. See where you stand!',
     },
     other: {
       'fc:frame': JSON.stringify(frame),
