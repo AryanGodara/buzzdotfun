@@ -74,7 +74,7 @@ export function WalletActions() {
               <button
                 type="button"
                 className="bg-white text-black rounded-md p-2 text-sm"
-                  onClick={() => switchChain({ chainId: baseSepolia.id })}
+                onClick={() => switchChain({ chainId: baseSepolia.id })}
               >
                 Switch to Base Sepolia
               </button>

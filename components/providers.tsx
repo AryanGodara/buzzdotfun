@@ -8,9 +8,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <WalletProvider>
       <FrameProvider>
-        <CreatorScoreProvider>
-          {children}
-        </CreatorScoreProvider>
+        <CreatorScoreProvider>{children}</CreatorScoreProvider>
       </FrameProvider>
     </WalletProvider>
   )

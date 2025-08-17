@@ -1,4 +1,4 @@
-import { BuzzApp } from '@/components/BuzzApp';
+import { BuzzApp } from '@/components/BuzzApp'
 import { APP_URL } from '@/lib/constants'
 import type { Metadata } from 'next'
 
@@ -31,5 +31,5 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default function Home() {
-  return <BuzzApp />;
+  return <BuzzApp />
 }

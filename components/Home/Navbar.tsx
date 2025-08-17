@@ -3,11 +3,9 @@ import React from 'react'
 const Navbar = () => {
   return (
     <nav>
-        <div>dashbord</div>
-        <a href='/score'>score</a>
-       
+      <div>dashbord</div>
+      <a href="/score">score</a>
     </nav>
-    
   )
 }
 
