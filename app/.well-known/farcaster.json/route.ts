@@ -13,7 +13,7 @@ export async function GET() {
     frame: {
       version: "1",
       name: "Buzz.fun",
-      iconUrl: `${APP_URL}/icon.png`,
+      iconUrl: `${APP_URL}/logo.png`,
       homeUrl: `${APP_URL}`,
       imageUrl: `${APP_URL}/logo.png`,
       subtitle: "Are you buzzing enough?",
