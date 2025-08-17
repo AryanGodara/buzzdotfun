@@ -16,6 +16,11 @@ export async function GET() {
       subtitle: 'Are you buzzing enough?',
       description: 'Are you buzzing enough? Check your creator score, compare with friends, and unlock funding based on your social influence. Top creators get the best rates. See where you stand!',
       primaryCategory: 'social',
+      screenshotUrls: [
+        `${APP_URL}/screenshots/ss1.png`,
+        `${APP_URL}/screenshots/ss2.png`,
+        `${APP_URL}/screenshots/ss3.png`,
+      ],
       tags: [
         'social',
         'defi',
