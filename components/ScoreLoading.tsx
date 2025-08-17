@@ -75,7 +75,7 @@ export function ScoreLoading({ onComplete }: ScoreLoadingProps) {
 
       // Mark steps as completed based on progress with delays
       const stepThresholds = [15, 35, 55, 75, 95]
-      const newCompletedSteps = []
+      const newCompletedSteps: string[] = []
       stepThresholds.forEach((threshold, index) => {
         if (currentProgress >= threshold) {
           newCompletedSteps.push(steps[index])
