@@ -4,14 +4,14 @@ import type { Metadata } from 'next'
 
 const frame = {
   version: 'next',
-  imageUrl: `${APP_URL}/images/base.png`,
+  imageUrl: `${APP_URL}/logo.png`,
   button: {
-    title: 'Launch Template',
+    title: 'Rate My Buzz',
     action: {
       type: 'launch_frame',
-      name: 'Base Farcaster MiniApp Template',
+      name: 'Buzz.fun',
       url: APP_URL,
-      splashImageUrl: `${APP_URL}/images/splash.png`,
+      splashImageUrl: `${APP_URL}/splash.png`,
       splashBackgroundColor: '#f7f7f7',
     },
   },
@@ -19,10 +19,10 @@ const frame = {
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
-    title: 'Base Farcaster MiniApp Template',
+    title: 'Buzz.fun',
     openGraph: {
-      title: 'Base Farcaster MiniApp Template',
-      description: 'A template for building mini-apps on Farcaster and Base',
+      title: 'Buzz.fun',
+      description: 'Are you buzzing enough? Check your creator score, compare with friends, and unlock funding based on your social influence. Top creators get the best rates. See where you stand!',
     },
     other: {
       'fc:frame': JSON.stringify(frame),
