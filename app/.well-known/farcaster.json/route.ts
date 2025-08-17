@@ -1,0 +1,36 @@
+import { NextResponse } from "next/server";
+import { APP_URL } from "../../../lib/constants";
+
+export async function GET() {
+  const farcasterConfig = {
+    accountAssociation: {
+      header: "",
+      payload: "",
+      signature: "",
+    },
+    frame: {
+      version: "1",
+      name: "Buzz.fun",
+      iconUrl: `${APP_URL}/icon.png`,
+      homeUrl: `${APP_URL}`,
+      imageUrl: `${APP_URL}/logo.png`,
+      subtitle: "Are you buzzing enough?",
+      description:
+        "Are you buzzing enough? Check your creator score, compare with friends, and unlock funding based on your social influence. Top creators get the best rates. See where you stand!",
+      screenshotUrls: [
+        `${APP_URL}/screenshots/ss1.png`,
+        `${APP_URL}/screenshots/ss2.png`,
+        `${APP_URL}/screenshots/ss3.png`,
+      ],
+      tagline: "Create buzz. Build credit.",
+      tags: ["social", "defi", "creator-lending", "credit", "community"],
+      primaryCategory: "social",
+      buttonTitle: "Launch Template",
+      splashImageUrl: `${APP_URL}/splash.png`,
+      splashBackgroundColor: "#ffffff",
+      webhookUrl: `${APP_URL}/api/webhook`,
+    },
+  };
+
+  return NextResponse.json(farcasterConfig);
+}
