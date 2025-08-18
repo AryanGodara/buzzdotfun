@@ -1,7 +1,7 @@
 import { useFrame } from '@/components/farcaster-provider'
 import { farcasterMiniApp as miniAppConnector } from '@farcaster/miniapp-wagmi-connector'
 import { parseEther } from 'viem'
-import { baseSepolia } from 'viem/chains'
+import { base } from 'viem/chains'
 import {
   useAccount,
   useConnect,
@@ -43,7 +43,7 @@ export function WalletActions() {
                 {chainId}
               </span>
             </p>
-            {chainId === baseSepolia.id ? (
+            {chainId === base.id ? (
               <div className="flex flex-col space-y-2 border border-[#333] p-4 rounded-md">
                 <h2 className="text-lg font-semibold text-left">
                   Send Transaction Example
@@ -61,7 +61,7 @@ export function WalletActions() {
                     className="bg-white text-black rounded-md p-2 text-sm"
                     onClick={() =>
                       window.open(
-                        `https://sepolia.basescan.org/tx/${hash}`,
+                        `https://basescan.org/tx/${hash}`,
                         '_blank',
                       )
                     }
@@ -74,9 +74,9 @@ export function WalletActions() {
               <button
                 type="button"
                 className="bg-white text-black rounded-md p-2 text-sm"
-                onClick={() => switchChain({ chainId: baseSepolia.id })}
+                onClick={() => switchChain({ chainId: base.id })}
               >
-                Switch to Base Sepolia
+                Switch to Base Mainnet
               </button>
             )}
 

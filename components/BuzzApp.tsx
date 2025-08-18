@@ -11,6 +11,8 @@ import { LeaderboardPage } from '@/components/LeaderboardPage'
 import { BottomNavigation } from '@/components/BottomNavigation'
 import { useCreatorScore } from '@/components/CreatorScoreProvider'
 import { useCTAFrameShare } from '@/components/CTAFrame'
+import { DummyTransaction } from '@/components/DummyTransaction'
+import { TransactionCTA } from '@/components/TransactionCTA'
 import { sdk } from '@farcaster/miniapp-sdk'
 
 // Component to display app name/logo
@@ -102,15 +104,20 @@ export function BuzzApp() {
             {/* Spacer to push button to bottom */}
             <div className="flex-1"></div>
 
-            {/* Calculate Button - Fixed at Bottom */}
-            <div className="mb-4">
+            {/* CTA and Calculate Buttons - Fixed at Bottom */}
+            <div className="space-y-3 mb-4">
+              <TransactionCTA className="w-full">
+                🎯 Join Creator Pool
+              </TransactionCTA>
+              
               <button
+                type="button"
                 onClick={handleCalculateScore}
                 disabled={metricsLoading || !user?.fid}
-                className="block w-full border-2 border-black p-4 text-center text-lg font-bold text-white hover:brightness-110 transition-all rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+                className="block w-full border-4 border-black p-4 text-center text-base font-bold text-white hover:brightness-110 transition-all rounded-xl disabled:opacity-50 disabled:cursor-not-allowed"
                 style={{
                   backgroundColor: '#4D61F4',
-                  boxShadow: '3px 3px 0px rgba(0,0,0,0.3)',
+                  boxShadow: '8px 8px 0px rgba(0,0,0,1)',
                 }}
               >
                 {metricsLoading
@@ -192,16 +199,9 @@ export function BuzzApp() {
           >
             🚀 Share Score
           </button>
-          <button
-            onClick={() => console.log('Mint NFT - Coming Soon!')}
-            className="flex-1 border-4 border-black p-4 text-center text-base font-bold text-black hover:bg-gray-100 transition-all rounded-xl"
-            style={{
-              backgroundColor: 'white',
-              boxShadow: '8px 8px 0px rgba(0,0,0,1)',
-            }}
-          >
-            Mint NFT
-          </button>
+          <div className="flex-1">
+            <DummyTransaction />
+          </div>
         </div>
       )}
 

@@ -4,6 +4,8 @@ interface CTAFrameProps {
   type: 'score' | 'waitlist'
   score?: number
   userName?: string
+  waitlistPosition?: number
+  rate?: string
 }
 
 interface CTAFrameData {
@@ -19,6 +21,8 @@ export function CTAFrame({
   type,
   score = 78,
   userName = 'Creator',
+  waitlistPosition = Math.floor(Math.random() * 500) + 200,
+  rate = '9.5',
 }: CTAFrameProps) {
   const frameData: CTAFrameData = {
     score: {
@@ -28,7 +32,7 @@ export function CTAFrame({
       embedUrl: MINIAPP_URL,
     },
     waitlist: {
-      image: '/WAITLIST.png',
+      image: `/api/waitlist-image?position=${waitlistPosition}&rate=${rate}&score=${score}`,
       text: 'Join the waitlist for better loan rates! 💰',
       subtext: 'get early access',
       embedUrl: MINIAPP_URL,
