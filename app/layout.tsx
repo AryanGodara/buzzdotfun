@@ -7,8 +7,12 @@ import './globals.css'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Base Farcaster MiniApp Template',
-  description: 'A template for building mini-apps on Farcaster and Base',
+  title: 'Buzz.fun - Creator Score',
+  description:
+    'Check your creator score and unlock funding based on your social influence',
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_URL || 'https://www.buzzbase.fun',
+  ),
 }
 
 export default function RootLayout({

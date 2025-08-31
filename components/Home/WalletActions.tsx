@@ -60,10 +60,7 @@ export function WalletActions() {
                     type="button"
                     className="bg-white text-black rounded-md p-2 text-sm"
                     onClick={() =>
-                      window.open(
-                        `https://basescan.org/tx/${hash}`,
-                        '_blank',
-                      )
+                      window.open(`https://basescan.org/tx/${hash}`, '_blank')
                     }
                   >
                     View Transaction

@@ -1,34 +1,29 @@
 'use client'
 
+import type { CreatorScore } from '@/lib/api'
+
 interface ScoreDisplayProps {
-  score?: number
+  scoreData?: CreatorScore
+  score?: number // Fallback for legacy usage
 }
 
-// Mock data for score display - will be replaced with backend call later
-const MOCK_SCORE_DATA = {
-  score: 78,
-  percentile: 'TOP 25%',
-  breakdown: {
+export function ScoreDisplay({
+  scoreData,
+  score: propScore,
+}: ScoreDisplayProps) {
+  // Use scoreData if available, otherwise fallback to propScore
+  const displayScore = scoreData
+    ? Math.round(scoreData.overallScore)
+    : propScore || 78
+  const percentile = scoreData?.tierInfo.percentile || 'TOP 25%'
+  const breakdown = scoreData?.components || {
     engagement: 89,
     consistency: 67,
     growth: 73,
     quality: 91,
     network: 58,
-  },
-  metrics: {
-    followers: 212,
-    following: 98,
-    casts: 62,
-    reactions: 440,
-    replies: 114,
-    recasts: 78,
-    engagement_rate: 6.6,
-  },
-}
-
-export function ScoreDisplay({ score: propScore }: ScoreDisplayProps) {
-  const { score, percentile, breakdown, metrics } = MOCK_SCORE_DATA
-  const displayScore = propScore || score
+  }
+  const tier = scoreData?.tier
 
   return (
     <div className="w-full max-w-md mx-auto">
@@ -58,6 +53,13 @@ export function ScoreDisplay({ score: propScore }: ScoreDisplayProps) {
         <p className="text-sm font-medium text-black mb-4">
           "You're in the {percentile} of creators!"
         </p>
+        {tier && (
+          <div className="mb-4">
+            <div className="inline-block px-3 py-1 bg-gradient-to-r from-yellow-400 to-yellow-600 text-black font-bold rounded-full border-2 border-black shadow-lg">
+              {tier} TIER
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Score Breakdown */}

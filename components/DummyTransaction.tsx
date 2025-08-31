@@ -17,7 +17,12 @@ const TRANSFER_AMOUNT = '0.000001' // 0.000001 ETH
 export function DummyTransaction() {
   const { isEthProviderAvailable } = useFrame()
   const { isConnected, address, chainId } = useAccount()
-  const { data: hash, sendTransaction, isPending, isSuccess } = useSendTransaction()
+  const {
+    data: hash,
+    sendTransaction,
+    isPending,
+    isSuccess,
+  } = useSendTransaction()
   const { switchChain } = useSwitchChain()
   const { connect } = useConnect()
 
@@ -35,7 +40,9 @@ export function DummyTransaction() {
   if (!isEthProviderAvailable) {
     return (
       <div className="p-4 border border-gray-300 rounded-lg bg-gray-50">
-        <p className="text-sm text-gray-600">Wallet connection only available via Warpcast</p>
+        <p className="text-sm text-gray-600">
+          Wallet connection only available via Warpcast
+        </p>
       </div>
     )
   }
@@ -57,7 +64,9 @@ export function DummyTransaction() {
   if (chainId !== base.id) {
     return (
       <div className="p-4 border border-gray-300 rounded-lg">
-        <p className="text-sm text-gray-600 mb-3">Please switch to Base Mainnet network</p>
+        <p className="text-sm text-gray-600 mb-3">
+          Please switch to Base Mainnet network
+        </p>
         <button
           type="button"
           className="w-full bg-orange-600 hover:bg-orange-700 text-white font-medium py-2 px-4 rounded-lg transition-colors"
@@ -80,7 +89,11 @@ export function DummyTransaction() {
       onClick={handleDummyTransaction}
       disabled={isPending}
     >
-      {isSuccess ? '✅ Pool Joined!' : isPending ? '⏳ Processing...' : '🎯 Join Creator Pool'}
+      {isSuccess
+        ? '✅ Pool Joined!'
+        : isPending
+          ? '⏳ Processing...'
+          : '🎯 Join Creator Pool'}
     </button>
   )
 }

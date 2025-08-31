@@ -1,7 +1,5 @@
 'use client'
 
-// import { FarcasterProfile } from '@/components/FarcasterProfile'; // Unused - moved to .unused
-// import { FarcasterUserInfo } from '@/components/FarcasterUserInfo'; // Unused - moved to .unused
 import { ClientOnlyWallet } from '@/components/ClientOnlyWallet'
 import Link from 'next/link'
 import { ScoreDisplay } from '@/components/ScoreDisplay'
@@ -35,13 +33,12 @@ function AppHeader({ onHomeClick }: { onHomeClick: () => void }) {
 // Main app component with integrated creator score functionality
 export function BuzzApp() {
   const {
-    metrics,
-    metricsLoading,
-    metricsError,
+    scoreData,
+    scoreLoading,
+    scoreError,
     showScore,
     showLoading,
     activeTab,
-    calculateScore,
     handleCalculateScore,
     handleLoadingComplete,
     handleHomeClick,
@@ -52,11 +49,10 @@ export function BuzzApp() {
   const { shareScoreFrame, shareWaitlistFrame } = useCTAFrameShare()
 
   const handleShareScore = async () => {
-    const score = calculateScore()
-    await shareScoreFrame(score)
+    if (scoreData) {
+      await shareScoreFrame(scoreData.overallScore)
+    }
   }
-
-  const score = calculateScore()
 
   return (
     <div
@@ -109,18 +105,18 @@ export function BuzzApp() {
               <TransactionCTA className="w-full">
                 🎯 Join Creator Pool
               </TransactionCTA>
-              
+
               <button
                 type="button"
                 onClick={handleCalculateScore}
-                disabled={metricsLoading || !user?.fid}
+                disabled={scoreLoading || !user?.fid}
                 className="block w-full border-4 border-black p-4 text-center text-base font-bold text-white hover:brightness-110 transition-all rounded-xl disabled:opacity-50 disabled:cursor-not-allowed"
                 style={{
                   backgroundColor: '#4D61F4',
                   boxShadow: '8px 8px 0px rgba(0,0,0,1)',
                 }}
               >
-                {metricsLoading
+                {scoreLoading
                   ? 'Calculating your vibes...'
                   : 'Show me my creator power!'}
               </button>
@@ -130,9 +126,11 @@ export function BuzzApp() {
           <div className="mt-1">
             <div className="text-center mb-6"></div>
 
-            {metricsError ? (
+            {scoreError ? (
               <div className="text-red-500 text-center">
-                <p className="mb-2 text-sm">Failed to fetch your metrics</p>
+                <p className="mb-2 text-sm">
+                  Failed to fetch your creator score
+                </p>
                 <button
                   onClick={handleCalculateScore}
                   className="px-3 py-1.5 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 text-sm"
@@ -140,9 +138,9 @@ export function BuzzApp() {
                   Try Again
                 </button>
               </div>
-            ) : (
+            ) : scoreData ? (
               <div className="w-full text-center">
-                <ScoreDisplay score={score} />
+                <ScoreDisplay scoreData={scoreData} />
 
                 <div
                   className="border-2 border-black p-4 mb-4 rounded-md"
@@ -181,13 +179,13 @@ export function BuzzApp() {
                   unlocked better loan rates
                 </p>
               </div>
-            )}
+            ) : null}
           </div>
         )}
       </main>
 
       {/* Floating Bottom Buttons - Only show when score is displayed and not on loans tab */}
-      {showScore && !metricsError && activeTab !== 'loans' && (
+      {showScore && !scoreError && activeTab !== 'loans' && (
         <div className="fixed bottom-16 left-4 right-4 flex gap-3">
           <button
             onClick={handleShareScore}

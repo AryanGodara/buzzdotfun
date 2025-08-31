@@ -19,7 +19,10 @@ interface TransactionCTAProps {
   children?: React.ReactNode
 }
 
-export function TransactionCTA({ className = '', children }: TransactionCTAProps) {
+export function TransactionCTA({
+  className = '',
+  children,
+}: TransactionCTAProps) {
   const { isEthProviderAvailable } = useFrame()
   const { isConnected, chainId } = useAccount()
   const { sendTransaction, isPending } = useSendTransaction()

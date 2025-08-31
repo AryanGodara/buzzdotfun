@@ -1,34 +1,21 @@
 'use client'
 
 import { Share2, Trophy } from 'lucide-react'
+import type { CreatorScore } from '@/lib/api'
 
 interface ScoreResultsProps {
-  score: number
+  scoreData: CreatorScore
   onCalculateAgain: () => void
 }
 
-// Hardcoded mock data matching wireframe
-const MOCK_SCORE_DATA = {
-  score: 78,
-  percentile: 'TOP 25%',
-  breakdown: {
-    engagement: 89,
-    consistency: 67,
-    growth: 73,
-    quality: 91,
-    network: 58,
-  },
-  friends: [
-    { username: '@alice', score: 72 },
-    { username: '@bob', score: 65 },
-  ],
-}
-
-export function ScoreResults({ onCalculateAgain }: ScoreResultsProps) {
-  const { score, percentile, breakdown, friends } = MOCK_SCORE_DATA
+export function ScoreResults({
+  scoreData,
+  onCalculateAgain,
+}: ScoreResultsProps) {
+  const { overallScore, tierInfo, components } = scoreData
 
   const handleShare = (platform: 'farcaster' | 'x') => {
-    const text = `🎉 YOUR SCORE IS ${score}! 🎉\n\nYou're in the ${percentile} of creators!\n\n#CreatorScore #Farcaster`
+    const text = `🎉 YOUR SCORE IS ${Math.round(overallScore)}! 🎉\n\nYou're in the ${tierInfo.percentile} of creators!\n\n#CreatorScore #Farcaster`
 
     if (platform === 'farcaster') {
       // Open Farcaster share intent
@@ -51,17 +38,21 @@ export function ScoreResults({ onCalculateAgain }: ScoreResultsProps) {
       <div className="text-center">
         <div className="flex items-center justify-center gap-2 mb-2">
           <Trophy className="w-6 h-6 text-yellow-500" />
-          <span className="text-lg font-bold">YOUR SCORE IS {score}!</span>
+          <span className="text-lg font-bold">
+            YOUR SCORE IS {Math.round(overallScore)}!
+          </span>
           <Trophy className="w-6 h-6 text-yellow-500" />
         </div>
 
         <div className="bg-white border-2 border-black rounded-xl p-6 mb-4 shadow-lg">
-          <div className="text-6xl font-bold text-blue-600 mb-2">{score}</div>
+          <div className="text-6xl font-bold text-blue-600 mb-2">
+            {Math.round(overallScore)}
+          </div>
           <div className="text-sm font-medium">CREATOR SCORE</div>
         </div>
 
         <p className="text-sm font-medium mb-4">
-          "You're in the {percentile} of creators!"
+          "You're in the {tierInfo.percentile} of creators!"
         </p>
       </div>
 
@@ -75,11 +66,11 @@ export function ScoreResults({ onCalculateAgain }: ScoreResultsProps) {
               <div className="w-20 h-3 bg-gray-200 rounded-full">
                 <div
                   className="h-full bg-gray-600 rounded-full"
-                  style={{ width: `${breakdown.engagement}%` }}
+                  style={{ width: `${components.engagement}%` }}
                 />
               </div>
               <span className="text-sm font-medium w-8">
-                {breakdown.engagement}
+                {Math.round(components.engagement)}
               </span>
             </div>
           </div>
@@ -89,11 +80,11 @@ export function ScoreResults({ onCalculateAgain }: ScoreResultsProps) {
               <div className="w-20 h-3 bg-gray-200 rounded-full">
                 <div
                   className="h-full bg-gray-600 rounded-full"
-                  style={{ width: `${breakdown.consistency}%` }}
+                  style={{ width: `${components.consistency}%` }}
                 />
               </div>
               <span className="text-sm font-medium w-8">
-                {breakdown.consistency}
+                {Math.round(components.consistency)}
               </span>
             </div>
           </div>
@@ -103,11 +94,11 @@ export function ScoreResults({ onCalculateAgain }: ScoreResultsProps) {
               <div className="w-20 h-3 bg-gray-200 rounded-full">
                 <div
                   className="h-full bg-gray-600 rounded-full"
-                  style={{ width: `${breakdown.growth}%` }}
+                  style={{ width: `${components.growth}%` }}
                 />
               </div>
               <span className="text-sm font-medium w-8">
-                {breakdown.growth}
+                {Math.round(components.growth)}
               </span>
             </div>
           </div>
@@ -117,11 +108,11 @@ export function ScoreResults({ onCalculateAgain }: ScoreResultsProps) {
               <div className="w-20 h-3 bg-gray-200 rounded-full">
                 <div
                   className="h-full bg-gray-600 rounded-full"
-                  style={{ width: `${breakdown.quality}%` }}
+                  style={{ width: `${components.quality}%` }}
                 />
               </div>
               <span className="text-sm font-medium w-8">
-                {breakdown.quality}
+                {Math.round(components.quality)}
               </span>
             </div>
           </div>
@@ -131,11 +122,11 @@ export function ScoreResults({ onCalculateAgain }: ScoreResultsProps) {
               <div className="w-20 h-3 bg-gray-200 rounded-full">
                 <div
                   className="h-full bg-gray-600 rounded-full"
-                  style={{ width: `${breakdown.network}%` }}
+                  style={{ width: `${components.network}%` }}
                 />
               </div>
               <span className="text-sm font-medium w-8">
-                {breakdown.network}
+                {Math.round(components.network)}
               </span>
             </div>
           </div>

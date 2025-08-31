@@ -1,28 +1,27 @@
 'use client'
 
-import { createContext, useContext, useState, ReactNode } from 'react'
+import { createContext, useContext, useState, type ReactNode } from 'react'
 import { useFrame } from '@/components/farcaster-provider'
-import { UserMetrics } from '@/lib/hooks/useFarcaster'
+import type { CreatorScore } from '@/lib/api'
 
 interface CreatorScoreContextType {
   // State
-  metrics: UserMetrics | null
-  metricsLoading: boolean
-  metricsError: string | null
+  scoreData: CreatorScore | null
+  scoreLoading: boolean
+  scoreError: string | null
   showScore: boolean
   showLoading: boolean
   activeTab: string
 
   // Actions
-  calculateScore: () => number
-  fetchUserMetrics: () => Promise<void>
+  fetchCreatorScore: () => Promise<void>
   handleCalculateScore: () => Promise<void>
   handleLoadingComplete: () => Promise<void>
   handleHomeClick: () => void
   handleTabChange: (tab: string) => void
 
   // User data
-  user: any
+  user: { fid: number; username?: string; displayName?: string } | undefined
   isSDKLoaded: boolean
 }
 
@@ -48,88 +47,150 @@ export function CreatorScoreProvider({ children }: CreatorScoreProviderProps) {
   const { isSDKLoaded, context } = useFrame()
   const user = context?.user
 
-  const [metrics, setMetrics] = useState<UserMetrics | null>(null)
-  const [metricsLoading, setMetricsLoading] = useState(false)
-  const [metricsError, setMetricsError] = useState<string | null>(null)
+  const [scoreData, setScoreData] = useState<CreatorScore | null>(null)
+  const [scoreLoading, setScoreLoading] = useState(false)
+  const [scoreError, setScoreError] = useState<string | null>(null)
   const [showScore, setShowScore] = useState(false)
   const [showLoading, setShowLoading] = useState(false)
   const [activeTab, setActiveTab] = useState('home')
 
-  // Calculate a score based on metrics
-  const calculateScore = (): number => {
-    if (!metrics) return 0
-
-    if (
-      metrics.followers === undefined ||
-      metrics.engagement_rate === undefined
-    ) {
-      return 0
-    }
-
-    const followersWeight = 0.3
-    const engagementWeight = 0.7
-
-    const followerScore = Math.min(100, metrics.followers / 10)
-    const engagementScore = metrics.engagement_rate * 100
-
-    const finalScore = Math.round(
-      followerScore * followersWeight + engagementScore * engagementWeight,
-    )
-
-    return finalScore
-  }
-
   // Generate mock data when backend is unavailable
-  const generateMockMetrics = (fid: number): UserMetrics => {
+  const generateMockScore = (fid: number): CreatorScore => {
     const fidSeed = fid % 100
+    const baseScore = 60 + (fidSeed % 40) // Score between 60-100
     return {
-      followers: 100 + fidSeed * 7,
-      following: 50 + fidSeed * 3,
-      casts: 30 + fidSeed * 2,
-      reactions: 200 + fidSeed * 15,
-      replies: 50 + fidSeed * 4,
-      recasts: 30 + fidSeed * 3,
-      engagement_rate: 0.05 + fidSeed / 1000,
-      last_updated: new Date().toISOString(),
+      fid,
+      overallScore: baseScore,
+      tier:
+        baseScore >= 90
+          ? 'AAA'
+          : baseScore >= 80
+            ? 'AA'
+            : baseScore >= 70
+              ? 'A'
+              : baseScore >= 60
+                ? 'BBB'
+                : 'BB',
+      tierInfo: {
+        tier:
+          baseScore >= 90
+            ? 'AAA'
+            : baseScore >= 80
+              ? 'AA'
+              : baseScore >= 70
+                ? 'A'
+                : baseScore >= 60
+                  ? 'BBB'
+                  : 'BB',
+        minScore:
+          baseScore >= 90
+            ? 90
+            : baseScore >= 80
+              ? 80
+              : baseScore >= 70
+                ? 70
+                : baseScore >= 60
+                  ? 60
+                  : 50,
+        maxScore:
+          baseScore >= 90
+            ? 100
+            : baseScore >= 80
+              ? 89
+              : baseScore >= 70
+                ? 79
+                : baseScore >= 60
+                  ? 69
+                  : 59,
+        description:
+          baseScore >= 90
+            ? 'Exceptional'
+            : baseScore >= 80
+              ? 'Excellent'
+              : baseScore >= 70
+                ? 'Very Good'
+                : baseScore >= 60
+                  ? 'Good'
+                  : 'Fair',
+        percentile:
+          baseScore >= 90
+            ? 'Top 5%'
+            : baseScore >= 80
+              ? 'Top 10%'
+              : baseScore >= 70
+                ? 'Top 20%'
+                : baseScore >= 60
+                  ? 'Top 40%'
+                  : 'Top 60%',
+      },
+      percentileRank: baseScore,
+      components: {
+        engagement: 60 + ((fidSeed * 2) % 35),
+        consistency: 65 + ((fidSeed * 3) % 30),
+        growth: 55 + ((fidSeed * 4) % 40),
+        quality: 70 + ((fidSeed * 5) % 25),
+        network: 60 + ((fidSeed * 6) % 35),
+      },
+      timestamp: new Date().toISOString(),
+      validUntil: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
     }
   }
 
-  const fetchUserMetrics = async (): Promise<void> => {
+  const fetchCreatorScore = async (): Promise<void> => {
     if (!user?.fid) {
-      setMetricsError('No user FID available')
+      setScoreError('No user FID available')
       return
     }
 
-    setMetricsLoading(true)
-    setMetricsError(null)
+    setScoreLoading(true)
+    setScoreError(null)
+
+    const apiUrl = `https://buzzfunbackend.buzzdotfun.workers.dev/api/score/creator/${user.fid}`
+    console.log('🚀 Making backend API call to:', apiUrl)
+    console.log('📊 Fetching creator score for FID:', user.fid)
 
     try {
-      const response = await fetch(
-        `http://localhost:4000/api/metrics/${user.fid}`,
-        {
-          signal: AbortSignal.timeout(3000),
+      const response = await fetch(apiUrl, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
         },
+        signal: AbortSignal.timeout(3000),
+      })
+
+      console.log('📡 Backend API response status:', response.status)
+      console.log(
+        '📡 Response headers:',
+        Object.fromEntries(response.headers.entries()),
       )
 
       if (!response.ok) {
-        throw new Error(`Failed to fetch metrics: ${response.status}`)
+        throw new Error(`Failed to fetch creator score: ${response.status}`)
       }
 
       const data = await response.json()
+      console.log('✅ Backend API response data:', data)
 
-      if (data?.metrics) {
-        setMetrics(data.metrics)
-        setMetricsLoading(false)
+      if (data?.success && data?.data) {
+        console.log('🎯 Using real backend data:', {
+          score: data.data.overallScore,
+          tier: data.data.tier,
+          components: data.data.components,
+        })
+        setScoreData(data.data)
+        setScoreLoading(false)
         setShowScore(true)
       } else {
-        setMetrics(generateMockMetrics(user.fid))
-        setMetricsLoading(false)
+        console.log('⚠️ Backend returned unsuccessful response, using mock data')
+        setScoreData(generateMockScore(user.fid))
+        setScoreLoading(false)
         setShowScore(true)
       }
     } catch (err) {
-      console.error('Error fetching user metrics:', err)
-      setMetrics(generateMockMetrics(user.fid))
-      setMetricsLoading(false)
+      console.log('❌ Backend API call failed:', err)
+      console.log('🔄 Using mock data for FID:', user.fid)
+      setScoreData(generateMockScore(user.fid))
+      setScoreLoading(false)
       setShowScore(true)
     }
   }
@@ -141,14 +202,14 @@ export function CreatorScoreProvider({ children }: CreatorScoreProviderProps) {
 
   const handleLoadingComplete = async (): Promise<void> => {
     setShowLoading(false)
-    await fetchUserMetrics()
+    await fetchCreatorScore()
   }
 
   const handleHomeClick = (): void => {
     setShowScore(false)
     setShowLoading(false)
-    setMetrics(null)
-    setMetricsError(null)
+    setScoreData(null)
+    setScoreError(null)
     setActiveTab('home')
   }
 
@@ -167,16 +228,15 @@ export function CreatorScoreProvider({ children }: CreatorScoreProviderProps) {
 
   const value: CreatorScoreContextType = {
     // State
-    metrics,
-    metricsLoading,
-    metricsError,
+    scoreData,
+    scoreLoading,
+    scoreError,
     showScore,
     showLoading,
     activeTab,
 
     // Actions
-    calculateScore,
-    fetchUserMetrics,
+    fetchCreatorScore,
     handleCalculateScore,
     handleLoadingComplete,
     handleHomeClick,
