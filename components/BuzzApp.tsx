@@ -124,8 +124,8 @@ export function BuzzApp() {
                 }}
               >
                 {scoreLoading
-                  ? 'Calculating your vibes...'
-                  : 'Show me my creator power!'}
+                  ? 'Calculating your score...'
+                  : 'Check My Loan Eligibility'}
               </button>
             </div>
           </>
