@@ -17,14 +17,12 @@ export function ComingSoonPage() {
         </div>
 
         {/* Title */}
-        <h1 className="text-2xl font-bold mb-4 text-gray-800">
-          Coming Soon
-        </h1>
+        <h1 className="text-2xl font-bold mb-4 text-gray-800">Coming Soon</h1>
 
         {/* Description */}
         <div className="mb-6">
           <p className="text-gray-600 mb-3 text-sm leading-relaxed">
-            We're working hard to bring you something amazing! 
+            We're working hard to bring you something amazing!
           </p>
           <p className="text-gray-500 text-xs">
             Stay tuned for updates on our exciting new features.

@@ -10,8 +10,7 @@ import { FindScorePage } from '@/components/FindScorePage'
 import { BottomNavigation } from '@/components/BottomNavigation'
 import { useCreatorScore } from '@/components/CreatorScoreProvider'
 import { useCTAFrameShare } from '@/components/CTAFrame'
-import { DummyTransaction } from '@/components/DummyTransaction'
-import { MintCreatorNFT } from '@/components/MintCreatorNFT'
+import { NFTMintButton } from '@/components/NFTMintButton'
 import Navbar from '@/components/Home/Navbar'
 import { UserProfile } from '@/components/UserProfile'
 import { sdk } from '@farcaster/miniapp-sdk'
@@ -94,7 +93,7 @@ export function BuzzApp() {
                 CALCULATE YOUR CREATOR SCORE!
               </h1>
               <p className="text-sm text-white font-medium drop-shadow-lg">
-                Join 2,847 creators who've unlocked better loan rates
+                Join the 247 creators who've unlocked better loan rates
               </p>
             </div>
 
@@ -107,12 +106,8 @@ export function BuzzApp() {
             {/* Spacer to push button to bottom */}
             <div className="flex-1" />
 
-            {/* CTA and Calculate Buttons - Fixed at Bottom */}
+            {/* Calculate Button - Fixed at Bottom */}
             <div className="space-y-3 mb-4">
-              <MintCreatorNFT className="w-full">
-                Mint Creator NFT
-              </MintCreatorNFT>
-
               <button
                 type="button"
                 onClick={handleCalculateScore}
@@ -151,7 +146,7 @@ export function BuzzApp() {
                 <ScoreDisplay scoreData={scoreData} />
 
                 <p className="text-sm mb-4 font-bold text-center text-white drop-shadow-lg">
-                  Join 2,847 creators who've unlocked better loan rates
+                  Join 247 creators who've unlocked better loan rates
                 </p>
               </div>
             ) : null}
@@ -174,7 +169,7 @@ export function BuzzApp() {
             Share Score
           </button>
           <div className="flex-1">
-            <DummyTransaction />
+            <NFTMintButton />
           </div>
         </div>
       )}

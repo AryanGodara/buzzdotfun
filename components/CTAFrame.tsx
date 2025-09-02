@@ -35,10 +35,7 @@ export function CTAFrame({
   }
 }
 
-export function generateCTAFrameUrl(
-  type: 'score',
-  score?: number,
-): string {
+export function generateCTAFrameUrl(type: 'score', score?: number): string {
   const frame = CTAFrame({ type, score })
 
   // Create the frame metadata for Farcaster

@@ -37,7 +37,7 @@ export function FindScorePage() {
           console.log('Failed to fetch user score:', error)
         }
       }
-      
+
       // Set myScore from scoreData or fetch directly if needed
       if (scoreData?.overallScore) {
         setMyScore(scoreData.overallScore)
@@ -62,7 +62,7 @@ export function FindScorePage() {
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     if (!username.trim()) {
       setError('Please enter a username')
       return
@@ -76,17 +76,17 @@ export function FindScorePage() {
       // API endpoint will be: /api/score/username/{username}
       const apiUrl = `https://buzzfunbackend.buzzdotfun.workers.dev/api/score/username/${username.trim()}`
       console.log('Searching for user score:', apiUrl)
-      
+
       const response = await fetch(apiUrl)
-      
+
       const data = await response.json()
-      
+
       if (!response.ok) {
         // Handle backend error response format: {"error": "User not found"}
         const errorMessage = data?.error || 'Failed to fetch user score'
         throw new Error(errorMessage)
       }
-      
+
       if (data?.success && data?.data) {
         setUserScore(data.data)
       } else {
@@ -103,7 +103,7 @@ export function FindScorePage() {
     // Create dynamic messaging based on score comparison
     const currentScore = myScore || scoreData?.overallScore || 0
     let competitiveMessage = ''
-    
+
     if (currentScore > user.overallScore) {
       competitiveMessage = `Just checked @${user.username}'s Creator Score: ${user.overallScore}/100 (Tier ${user.tier})! 
 
@@ -158,12 +158,18 @@ Test your loan eligibility: buzz.fun`
 
   const getTierColor = (tier: string) => {
     switch (tier) {
-      case 'S': return 'text-purple-600 bg-purple-100'
-      case 'A': return 'text-green-600 bg-green-100'
-      case 'B': return 'text-blue-600 bg-blue-100'
-      case 'C': return 'text-yellow-600 bg-yellow-100'
-      case 'D': return 'text-red-600 bg-red-100'
-      default: return 'text-gray-600 bg-gray-100'
+      case 'S':
+        return 'text-purple-600 bg-purple-100'
+      case 'A':
+        return 'text-green-600 bg-green-100'
+      case 'B':
+        return 'text-blue-600 bg-blue-100'
+      case 'C':
+        return 'text-yellow-600 bg-yellow-100'
+      case 'D':
+        return 'text-red-600 bg-red-100'
+      default:
+        return 'text-gray-600 bg-gray-100'
     }
   }
 
@@ -177,7 +183,7 @@ Test your loan eligibility: buzz.fun`
         <h1 className="text-xl font-bold mb-4 text-center text-gray-800">
           Find Creator Score
         </h1>
-        
+
         <form onSubmit={handleSearch} className="space-y-4">
           <div className="relative">
             <input
@@ -190,7 +196,7 @@ Test your loan eligibility: buzz.fun`
             />
             <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
           </div>
-          
+
           <button
             type="submit"
             disabled={loading || !username.trim()}
@@ -233,7 +239,9 @@ Test your loan eligibility: buzz.fun`
                 {userScore.overallScore}
               </span>
               <span className="text-lg text-gray-600">/100</span>
-              <span className={`px-2 py-1 rounded-full text-xs font-bold ${getTierColor(userScore.tier)}`}>
+              <span
+                className={`px-2 py-1 rounded-full text-xs font-bold ${getTierColor(userScore.tier)}`}
+              >
                 Tier {userScore.tier}
               </span>
             </div>
@@ -244,7 +252,7 @@ Test your loan eligibility: buzz.fun`
             <h3 className="text-sm font-bold text-gray-800 text-center mb-3">
               SCORE BREAKDOWN
             </h3>
-            
+
             {Object.entries(userScore.components).map(([key, value]) => (
               <div key={key} className="flex items-center justify-between">
                 <span className="text-xs text-gray-700 font-medium capitalize">
@@ -278,7 +286,7 @@ Test your loan eligibility: buzz.fun`
             >
               Challenge @{userScore.username} Directly
             </button>
-            
+
             <button
               type="button"
               onClick={() => handleTagFriend(userScore)}
