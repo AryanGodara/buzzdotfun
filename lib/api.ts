@@ -4,6 +4,9 @@ const API_BASE = 'https://buzzfunbackend.buzzdotfun.workers.dev/api'
 // Types based on backend API documentation
 export interface CreatorScore {
   fid: number
+  username: string | null
+  displayName: string | null
+  pfpUrl: string | null
   overallScore: number
   tier: string
   tierInfo: {
@@ -28,6 +31,9 @@ export interface CreatorScore {
 export interface LeaderboardEntry {
   rank: number
   fid: number
+  username: string | null
+  displayName: string | null
+  pfpUrl: string | null
   overallScore: number
   tier: string
   tierInfo: {
@@ -126,6 +132,19 @@ export const getTierDescription = (tier: string): string => {
     D: 'Very Poor',
   }
   return descriptions[tier] || 'Unknown'
+}
+
+// Utility functions for profile data
+export const getDisplayName = (
+  creator: CreatorScore | LeaderboardEntry,
+): string => {
+  return creator.displayName || creator.username || ''
+}
+
+export const getProfileImage = (
+  creator: CreatorScore | LeaderboardEntry,
+): string | null => {
+  return creator.pfpUrl || null
 }
 
 // Health check endpoint

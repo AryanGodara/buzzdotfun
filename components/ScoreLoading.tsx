@@ -97,10 +97,10 @@ export function ScoreLoading({ onComplete }: ScoreLoadingProps) {
   }, [onComplete])
 
   return (
-    <div className="w-full max-w-md mx-auto">
-      <div className="text-center mb-8">
+    <div className="w-full max-w-sm mx-auto px-4">
+      <div className="text-center mb-6">
         <h1
-          className="text-lg font-bold text-white mb-4"
+          className="text-base font-bold text-white mb-3"
           style={{
             textShadow:
               '2px 2px 0px black, -1px -1px 0px black, 1px -1px 0px black, -1px 1px 0px black',
@@ -110,7 +110,7 @@ export function ScoreLoading({ onComplete }: ScoreLoadingProps) {
         </h1>
 
         {/* Animated Progress Circle */}
-        <div className="relative w-32 h-32 mx-auto mb-6">
+        <div className="relative w-24 h-24 mx-auto mb-4">
           {/* Background circle */}
           <div className="absolute inset-0 rounded-full border-4 border-gray-300" />
 
@@ -136,23 +136,23 @@ export function ScoreLoading({ onComplete }: ScoreLoadingProps) {
 
           {/* Progress text */}
           <div className="absolute inset-0 flex items-center justify-center">
-            <span className="text-2xl font-bold text-white">
+            <span className="text-xl font-bold text-white">
               {Math.round(progress)}%
             </span>
           </div>
         </div>
 
-        <p className="text-sm text-white mb-6">
+        <p className="text-xs text-white mb-4">
           {Math.round(progress)}% Complete
         </p>
       </div>
 
       {/* Progress Steps */}
       <div
-        className="bg-white border-2 border-black rounded-md p-4 mb-6"
+        className="bg-white border-2 border-black rounded-md p-3 mb-4"
         style={{ boxShadow: '3px 3px 0px rgba(0,0,0,0.3)' }}
       >
-        <div className="space-y-3">
+        <div className="space-y-2">
           {steps.map((step, index) => {
             const isCompleted = completedSteps.includes(step)
             const isInProgress = !isCompleted && completedSteps.length === index
@@ -182,13 +182,13 @@ export function ScoreLoading({ onComplete }: ScoreLoadingProps) {
                   )}
                 </div>
                 <span
-                  className={`text-sm ${isCompleted ? 'text-green-600 font-medium' : isInProgress ? 'text-blue-600 font-medium' : 'text-gray-500'}`}
+                  className={`text-xs ${isCompleted ? 'text-green-600 font-medium' : isInProgress ? 'text-blue-600 font-medium' : 'text-gray-500'}`}
                 >
                   {step}
                 </span>
                 <div className="flex-1">
                   {(isCompleted || isInProgress) && (
-                    <div className="w-full h-2 bg-gray-200 rounded-full ml-2">
+                    <div className="w-full h-1.5 bg-gray-200 rounded-full ml-2">
                       <div
                         className={`h-full rounded-full transition-all duration-1000 ease-out ${isCompleted ? 'bg-green-500 w-full' : 'bg-blue-500'}`}
                         style={{
@@ -210,15 +210,17 @@ export function ScoreLoading({ onComplete }: ScoreLoadingProps) {
       </div>
 
       {/* Status Text */}
-      <div className="text-center mb-6">
-        <p className="text-sm text-black font-medium">
+      <div className="text-center mb-3">
+        <p className="text-xs text-black font-medium">
           "Crunching data from your last 45 days of Farcaster activity..."
         </p>
       </div>
 
       {/* Random Fact Quote */}
       <div className="text-center">
-        <p className="text-xs text-gray-600 italic">"{currentFact}"</p>
+        <p className="text-xs text-gray-600 italic leading-tight">
+          "{currentFact}"
+        </p>
       </div>
     </div>
   )

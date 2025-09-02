@@ -60,6 +60,9 @@ export function CreatorScoreProvider({ children }: CreatorScoreProviderProps) {
     const baseScore = 60 + (fidSeed % 40) // Score between 60-100
     return {
       fid,
+      username: null,
+      displayName: null,
+      pfpUrl: null,
       overallScore: baseScore,
       tier:
         baseScore >= 90

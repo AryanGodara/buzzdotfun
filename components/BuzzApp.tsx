@@ -11,12 +11,15 @@ import { useCreatorScore } from '@/components/CreatorScoreProvider'
 import { useCTAFrameShare } from '@/components/CTAFrame'
 import { DummyTransaction } from '@/components/DummyTransaction'
 import { TransactionCTA } from '@/components/TransactionCTA'
+import Navbar from '@/components/Home/Navbar'
+import { UserProfile } from '@/components/UserProfile'
 import { sdk } from '@farcaster/miniapp-sdk'
 
 // Component to display app name/logo
 function AppHeader({ onHomeClick }: { onHomeClick: () => void }) {
   return (
     <button
+      type="button"
       onClick={onHomeClick}
       className="flex items-center space-x-2 hover:opacity-80 transition-opacity"
     >
@@ -55,22 +58,23 @@ export function BuzzApp() {
   }
 
   return (
-    <div
-      className="min-h-screen flex flex-col pb-12"
-      style={{ backgroundColor: '#D7FF7B' }}
-    >
-      <header className="flex justify-between items-center p-4 border-b border-gray-200">
+    <div className="min-h-screen bg-gradient-to-br from-blue-400 via-purple-500 to-pink-500 text-white overflow-x-hidden max-w-full">
+      {/* Header */}
+      <header className="p-4 flex justify-between items-center">
         <AppHeader onHomeClick={handleHomeClick} />
-        <ClientOnlyWallet />
+        <div className="flex items-center space-x-4">
+          <UserProfile />
+        </div>
       </header>
 
-      <main className="flex-1 px-4 py-4 max-w-md mx-auto w-full flex flex-col pb-24">
+      {/* Main Content */}
+      <main className="px-4 pb-20 flex flex-col min-h-[calc(100vh-80px)] max-w-full overflow-x-hidden">
         {activeTab === 'loans' ? (
           <WaitlistPage />
         ) : activeTab === 'leaderboard' ? (
           <LeaderboardPage />
         ) : showLoading ? (
-          <div className="mt-6">
+          <div className="flex-1 flex items-center justify-center">
             <ScoreLoading onComplete={handleLoadingComplete} />
           </div>
         ) : !showScore ? (
@@ -86,19 +90,19 @@ export function BuzzApp() {
               >
                 CALCULATE YOUR CREATOR SCORE!
               </h1>
-              <p className="text-sm text-gray-700">
+              <p className="text-sm text-white font-medium drop-shadow-lg">
                 Join 2,847 creators who've unlocked better loan rates
               </p>
             </div>
 
             {!user?.fid && (
-              <p className="mt-3 text-center text-red-500 text-sm">
+              <p className="mt-3 text-center text-red-300 text-sm font-medium drop-shadow-lg">
                 Connect your Farcaster account first to calculate your score
               </p>
             )}
 
             {/* Spacer to push button to bottom */}
-            <div className="flex-1"></div>
+            <div className="flex-1" />
 
             {/* CTA and Calculate Buttons - Fixed at Bottom */}
             <div className="space-y-3 mb-4">
@@ -124,7 +128,7 @@ export function BuzzApp() {
           </>
         ) : (
           <div className="mt-1">
-            <div className="text-center mb-6"></div>
+            <div className="text-center mb-6" />
 
             {scoreError ? (
               <div className="text-red-500 text-center">
@@ -132,6 +136,7 @@ export function BuzzApp() {
                   Failed to fetch your creator score
                 </p>
                 <button
+                  type="button"
                   onClick={handleCalculateScore}
                   className="px-3 py-1.5 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 text-sm"
                 >
@@ -142,41 +147,8 @@ export function BuzzApp() {
               <div className="w-full text-center">
                 <ScoreDisplay scoreData={scoreData} />
 
-                <div
-                  className="border-2 border-black p-4 mb-4 rounded-md"
-                  style={{
-                    backgroundColor: '#D7FF7B',
-                    boxShadow: '3px 3px 0px rgba(0,0,0,0.3)',
-                  }}
-                >
-                  <h3
-                    className="text-base font-bold mb-3 text-white"
-                    style={{
-                      textShadow:
-                        '2px 2px 0px black, -1px -1px 0px black, 1px -1px 0px black, -1px 1px 0px black',
-                    }}
-                  >
-                    TODAY'S TOP CREATORS
-                  </h3>
-                  <div className="space-y-2">
-                    <div className="flex justify-between items-center border-b border-black pb-1">
-                      <span className="font-bold">@alice.eth</span>
-                      <span className="font-black">94</span>
-                    </div>
-                    <div className="flex justify-between items-center border-b border-black pb-1">
-                      <span className="font-bold">@bob.lens</span>
-                      <span className="font-black">91</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="font-bold">@charlie</span>
-                      <span className="font-black">89</span>
-                    </div>
-                  </div>
-                </div>
-
-                <p className="text-sm mb-4 font-bold text-center">
-                  Join {Math.floor(Math.random() * 5000)} creators who've
-                  unlocked better loan rates
+                <p className="text-sm mb-4 font-bold text-center text-white drop-shadow-lg">
+                  Join 2,847 creators who've unlocked better loan rates
                 </p>
               </div>
             ) : null}
@@ -186,13 +158,14 @@ export function BuzzApp() {
 
       {/* Floating Bottom Buttons - Only show when score is displayed and not on loans tab */}
       {showScore && !scoreError && activeTab !== 'loans' && (
-        <div className="fixed bottom-16 left-4 right-4 flex gap-3">
+        <div className="fixed bottom-16 left-4 right-4 flex gap-2">
           <button
+            type="button"
             onClick={handleShareScore}
-            className="flex-1 border-4 border-black p-4 text-center text-base font-bold text-white hover:brightness-110 transition-all rounded-xl"
+            className="flex-1 border-2 border-black py-2 px-4 text-center text-sm font-bold text-white hover:brightness-110 transition-all rounded-lg"
             style={{
               backgroundColor: '#FF6B35',
-              boxShadow: '8px 8px 0px rgba(0,0,0,1)',
+              boxShadow: '4px 4px 0px rgba(0,0,0,0.8)',
             }}
           >
             🚀 Share Score
