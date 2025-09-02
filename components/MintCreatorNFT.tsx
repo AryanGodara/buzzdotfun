@@ -147,7 +147,7 @@ export function MintCreatorNFT({
   style,
 }: MintCreatorNFTProps) {
   console.log('🔧 MintCreatorNFT component rendering...')
-  
+
   const { isEthProviderAvailable } = useFrame()
   const { isConnected, chainId, address } = useAccount()
   const { writeContract, data: hash, isPending } = useWriteContract()
@@ -173,8 +173,13 @@ export function MintCreatorNFT({
 
   // Handle successful transaction
   useEffect(() => {
-    console.log('🔄 Transaction effect triggered:', { isConfirmed, hash: !!hash, userFid: user?.fid, address: !!address })
-    
+    console.log('🔄 Transaction effect triggered:', {
+      isConfirmed,
+      hash: !!hash,
+      userFid: user?.fid,
+      address: !!address,
+    })
+
     if (!isConfirmed || !hash || !user?.fid || !address) return
 
     const handleTransactionSuccess = async () => {

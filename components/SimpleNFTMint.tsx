@@ -12,6 +12,7 @@ import {
 import { farcasterMiniApp as miniAppConnector } from '@farcaster/miniapp-wagmi-connector'
 import { useFrame } from '@/components/farcaster-provider'
 import { useCreatorScore } from '@/components/CreatorScoreProvider'
+import { NFTSuccessModal } from './NFTSuccessModal'
 
 // BuzzCreatorNFT Contract ABI - mintCreatorScore function
 const MINT_ABI = [
@@ -40,22 +41,40 @@ interface SimpleNFTMintProps {
   className?: string
   style?: React.CSSProperties
   children?: React.ReactNode
+  onViewProfile?: () => void
 }
 
-export function SimpleNFTMint({ className = '', style, children }: SimpleNFTMintProps) {
-  const [status, setStatus] = useState<'idle' | 'minting' | 'confirming' | 'success' | 'error'>('idle')
+export function SimpleNFTMint({
+  className = '',
+  style,
+  children,
+  onViewProfile,
+}: SimpleNFTMintProps) {
+  const [status, setStatus] = useState<
+    'idle' | 'minting' | 'confirming' | 'success' | 'error'
+  >('idle')
   const [errorMessage, setErrorMessage] = useState('')
   const [transactionHash, setTransactionHash] = useState<string>('')
+  const [showSuccessModal, setShowSuccessModal] = useState(false)
 
   const { isEthProviderAvailable } = useFrame()
   const { isConnected, chainId, address } = useAccount()
   const { connect } = useConnect()
   const { switchChain } = useSwitchChain()
-  const { writeContract, data: hash, isPending } = useWriteContract()
+  const {
+    writeContract,
+    data: hash,
+    isPending,
+    error: writeError,
+  } = useWriteContract()
   const { scoreData, user } = useCreatorScore()
 
   // Wait for transaction confirmation
-  const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransactionReceipt({
+  const {
+    isLoading: isConfirming,
+    isSuccess: isConfirmed,
+    error: receiptError,
+  } = useWaitForTransactionReceipt({
     hash,
   })
 
@@ -70,7 +89,27 @@ export function SimpleNFTMint({ className = '', style, children }: SimpleNFTMint
     hash,
     isConfirming,
     isConfirmed,
+    writeError: writeError?.message,
+    receiptError: receiptError?.message,
   })
+
+  // Handle write errors
+  useEffect(() => {
+    if (writeError) {
+      console.error('❌ Write contract error:', writeError)
+      setStatus('error')
+      setErrorMessage(writeError.message || 'Failed to initiate transaction')
+    }
+  }, [writeError])
+
+  // Handle receipt errors
+  useEffect(() => {
+    if (receiptError) {
+      console.error('❌ Receipt error:', receiptError)
+      setStatus('error')
+      setErrorMessage(receiptError.message || 'Transaction failed')
+    }
+  }, [receiptError])
 
   // Handle transaction state changes
   useEffect(() => {
@@ -92,31 +131,52 @@ export function SimpleNFTMint({ className = '', style, children }: SimpleNFTMint
     try {
       console.log('🎉 NFT minted successfully! Hash:', txHash)
       console.log('🔗 View on BaseScan:', `https://basescan.org/tx/${txHash}`)
-      
+
+      // Store NFT data in localStorage for profile page
+      const nftData = {
+        transactionHash: txHash,
+        contractAddress: CONTRACT_ADDRESS,
+        timestamp: Date.now(),
+        scoreData: scoreData,
+        userFid: user?.fid,
+        username: user?.username,
+      }
+
+      const existingNFTs = JSON.parse(
+        localStorage.getItem('mintedNFTs') || '[]',
+      )
+      existingNFTs.push(nftData)
+      localStorage.setItem('mintedNFTs', JSON.stringify(existingNFTs))
+
       // Store metadata in backend
       if (user?.fid) {
         console.log('💾 Storing NFT metadata for FID:', user.fid)
-        const response = await fetch('https://buzzfunbackend.buzzdotfun.workers.dev/api/nft/store', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            fid: user.fid,
-            transactionHash: txHash,
-            contractAddress: CONTRACT_ADDRESS,
-          }),
-        })
-        
+        const response = await fetch(
+          'https://buzzfunbackend.buzzdotfun.workers.dev/api/nft/store',
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              fid: user.fid,
+              transactionHash: txHash,
+              contractAddress: CONTRACT_ADDRESS,
+            }),
+          },
+        )
+
         if (response.ok) {
           console.log('✅ Metadata stored successfully')
         } else {
           console.warn('⚠️ Failed to store metadata:', response.status)
         }
       }
-      
+
       setStatus('success')
+      setShowSuccessModal(true)
     } catch (error) {
       console.error('❌ Error in post-mint processing:', error)
       setStatus('success') // Still show success since mint worked
+      setShowSuccessModal(true)
     }
   }
 
@@ -179,7 +239,9 @@ export function SimpleNFTMint({ className = '', style, children }: SimpleNFTMint
         // Truncate decimal scores to integers for BigInt conversion
         const truncatedOverallScore = Math.floor(scoreData.overallScore)
         const truncatedEngagement = Math.floor(scoreData.components.engagement)
-        const truncatedConsistency = Math.floor(scoreData.components.consistency)
+        const truncatedConsistency = Math.floor(
+          scoreData.components.consistency,
+        )
         const truncatedGrowth = Math.floor(scoreData.components.growth)
         const truncatedQuality = Math.floor(scoreData.components.quality)
         const truncatedNetwork = Math.floor(scoreData.components.network)
@@ -208,31 +270,57 @@ export function SimpleNFTMint({ className = '', style, children }: SimpleNFTMint
         console.log('📝 Final mint arguments:', mintArgs)
         console.log('📞 Calling writeContract with ABI and args...')
 
-        writeContract({
+        const result = writeContract({
           address: CONTRACT_ADDRESS,
           abi: MINT_ABI,
           functionName: 'mintCreatorScore',
           args: mintArgs,
         })
 
-        console.log('✅ writeContract call initiated - waiting for transaction hash...')
+        console.log('✅ writeContract result:', result)
+        console.log(
+          '✅ writeContract call initiated - waiting for transaction hash...',
+        )
+
+        // Add a timeout to detect if the transaction is stuck
+        setTimeout(() => {
+          if (status === 'minting' && !hash) {
+            console.warn(
+              '⚠️ Transaction seems stuck - no hash received after 10 seconds',
+            )
+            console.log('🔍 Current state:', {
+              status,
+              hash,
+              isPending,
+              writeError,
+            })
+            setStatus('error')
+            setErrorMessage(
+              'Transaction timed out. Please check your wallet and try again.',
+            )
+          }
+        }, 10000)
       } catch (error) {
         console.error('❌ Error in handleMint:', error)
         setStatus('error')
-        setErrorMessage(error instanceof Error ? error.message : 'Failed to mint NFT')
+        setErrorMessage(
+          error instanceof Error ? error.message : 'Failed to mint NFT',
+        )
       }
     } catch (error) {
       console.error('❌ Outer handleMint error:', error)
       setStatus('error')
-      setErrorMessage(error instanceof Error ? error.message : 'Failed to mint NFT')
+      setErrorMessage(
+        error instanceof Error ? error.message : 'Failed to mint NFT',
+      )
     }
   }
 
   const getButtonText = () => {
     if (status === 'minting' || isPending) return 'Minting...'
     if (status === 'confirming' || isConfirming) return 'Confirming...'
-    if (status === 'success') return 'Minted Successfully!'
-    if (status === 'error') return 'Minting Failed'
+    if (status === 'success') return 'Mint Another NFT'
+    if (status === 'error') return 'Try Again'
     if (!isEthProviderAvailable) return 'Wallet Unavailable'
     if (!isConnected) return 'Connect Wallet'
     if (chainId !== base.id) return 'Switch to Base'
@@ -240,7 +328,16 @@ export function SimpleNFTMint({ className = '', style, children }: SimpleNFTMint
     return children || 'Mint NFT'
   }
 
-  const isDisabled = status === 'minting' || isPending || status === 'confirming' || isConfirming
+  const isDisabled =
+    status === 'minting' || isPending || status === 'confirming' || isConfirming
+
+  // Reset status if it gets stuck
+  useEffect(() => {
+    if (status === 'minting' && !isPending && !hash && !writeError) {
+      console.log('🔄 Resetting stuck minting status')
+      setStatus('idle')
+    }
+  }, [status, isPending, hash, writeError])
 
   return (
     <div className="space-y-2">
@@ -253,36 +350,21 @@ export function SimpleNFTMint({ className = '', style, children }: SimpleNFTMint
       >
         {getButtonText()}
       </button>
-      
+
       {errorMessage && (
         <div className="text-red-500 text-sm p-2 bg-red-50 rounded">
           {errorMessage}
         </div>
       )}
-      
-      {status === 'success' && transactionHash && (
-        <div className="text-green-500 text-sm p-2 bg-green-50 rounded space-y-2">
-          <div>NFT minted successfully!</div>
-          <div className="text-xs">
-            <div>Transaction: {transactionHash.slice(0, 10)}...{transactionHash.slice(-8)}</div>
-            <a 
-              href={`https://basescan.org/tx/${transactionHash}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-600 hover:text-blue-800 underline"
-            >
-              View on BaseScan
-            </a>
-          </div>
-        </div>
-      )}
-      
+
       {status === 'confirming' && transactionHash && (
         <div className="text-blue-500 text-sm p-2 bg-blue-50 rounded space-y-2">
           <div>Confirming transaction...</div>
           <div className="text-xs">
-            <div>Hash: {transactionHash.slice(0, 10)}...{transactionHash.slice(-8)}</div>
-            <a 
+            <div>
+              Hash: {transactionHash.slice(0, 10)}...{transactionHash.slice(-8)}
+            </div>
+            <a
               href={`https://basescan.org/tx/${transactionHash}`}
               target="_blank"
               rel="noopener noreferrer"
@@ -293,6 +375,13 @@ export function SimpleNFTMint({ className = '', style, children }: SimpleNFTMint
           </div>
         </div>
       )}
+
+      <NFTSuccessModal
+        isOpen={showSuccessModal}
+        onClose={() => setShowSuccessModal(false)}
+        transactionHash={transactionHash}
+        onViewProfile={onViewProfile}
+      />
     </div>
   )
 }
