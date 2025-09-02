@@ -43,7 +43,7 @@ The Buzz Fun Backend is a creator credit rating system for Farcaster creators th
 
 ## 🔗 API Endpoints
 
-### 1. Get Creator Score
+### 1. Get Creator Score by FID
 
 **Endpoint:** `GET /api/score/creator/:fid`
 
@@ -52,6 +52,16 @@ The Buzz Fun Backend is a creator credit rating system for Farcaster creators th
 **Parameters:**
 
 - `fid` (path): Farcaster ID (integer)
+
+### 2. Get Creator Score by Username
+
+**Endpoint:** `GET /api/score/username/:username`
+
+**Description:** Get individual creator credit score by username with detailed breakdown
+
+**Parameters:**
+
+- `username` (path): Farcaster username (string, e.g., "dwr.eth", "vitalik.eth")
 
 **Response Format:**
 Returns comprehensive creator score with tier classification and user profile data.
@@ -89,7 +99,7 @@ Returns comprehensive creator score with tier classification and user profile da
 }
 ```
 
-**Error Response:**
+**Error Response (FID endpoint):**
 
 ```json
 {
@@ -97,11 +107,19 @@ Returns comprehensive creator score with tier classification and user profile da
 }
 ```
 
+**Error Response (Username endpoint):**
+
+```json
+{
+  "error": "User not found"
+}
+```
+
 **Cache:** 1 week per score
 
 ---
 
-### 2. Get Leaderboard
+### 3. Get Leaderboard
 
 **Endpoint:** `GET /api/leaderboard`
 
@@ -222,9 +240,16 @@ Returns comprehensive creator score with tier classification and user profile da
 ### Sample Frontend Code
 
 ```javascript
-// Get creator score
+// Get creator score by FID
 const getCreatorScore = async (fid) => {
   const response = await fetch(`https://buzzfunbackend.buzzdotfun.workers.dev/api/score/creator/${fid}`);
+  const data = await response.json();
+  return data.success ? data.data : null;
+};
+
+// Get creator score by username
+const getCreatorScoreByUsername = async (username) => {
+  const response = await fetch(`https://buzzfunbackend.buzzdotfun.workers.dev/api/score/username/${username}`);
   const data = await response.json();
   return data.success ? data.data : null;
 };

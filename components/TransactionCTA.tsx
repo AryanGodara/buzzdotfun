@@ -56,11 +56,11 @@ export function TransactionCTA({
   }
 
   const getButtonText = () => {
-    if (isPending) return '⏳ Joining Pool...'
-    if (!isEthProviderAvailable) return '🔒 Wallet Unavailable'
-    if (!isConnected) return '🔗 Connect Wallet'
-    if (chainId !== base.id) return '🔄 Switch Network'
-    return children || '🎯 Join Pool ($0.01 → $100 Prize)'
+    if (isPending) return 'Joining Pool...'
+    if (!isEthProviderAvailable) return 'Wallet Unavailable'
+    if (!isConnected) return 'Connect Wallet'
+    if (chainId !== base.id) return 'Switch Network'
+    return children || 'Join Creator Pool'
   }
 
   return (

@@ -90,10 +90,10 @@ export function DummyTransaction() {
       disabled={isPending}
     >
       {isSuccess
-        ? '✅ Pool Joined!'
+        ? 'Pool Joined!'
         : isPending
-          ? '⏳ Processing...'
-          : '🎯 Join Creator Pool'}
+          ? 'Processing...'
+          : 'Join Creator Pool'}
     </button>
   )
 }

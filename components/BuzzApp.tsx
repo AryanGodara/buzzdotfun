@@ -4,8 +4,9 @@ import { ClientOnlyWallet } from '@/components/ClientOnlyWallet'
 import Link from 'next/link'
 import { ScoreDisplay } from '@/components/ScoreDisplay'
 import { ScoreLoading } from '@/components/ScoreLoading'
-import { WaitlistPage } from '@/components/WaitlistPage'
+import { ComingSoonPage } from '@/components/ComingSoonPage'
 import { LeaderboardPage } from '@/components/LeaderboardPage'
+import { FindScorePage } from '@/components/FindScorePage'
 import { BottomNavigation } from '@/components/BottomNavigation'
 import { useCreatorScore } from '@/components/CreatorScoreProvider'
 import { useCTAFrameShare } from '@/components/CTAFrame'
@@ -49,7 +50,7 @@ export function BuzzApp() {
     user,
   } = useCreatorScore()
 
-  const { shareScoreFrame, shareWaitlistFrame } = useCTAFrameShare()
+  const { shareScoreFrame } = useCTAFrameShare()
 
   const handleShareScore = async () => {
     if (scoreData) {
@@ -70,9 +71,11 @@ export function BuzzApp() {
       {/* Main Content */}
       <main className="px-4 pb-20 flex flex-col min-h-[calc(100vh-80px)] max-w-full overflow-x-hidden">
         {activeTab === 'loans' ? (
-          <WaitlistPage />
+          <ComingSoonPage />
         ) : activeTab === 'leaderboard' ? (
           <LeaderboardPage />
+        ) : activeTab === 'search' ? (
+          <FindScorePage />
         ) : showLoading ? (
           <div className="flex-1 flex items-center justify-center">
             <ScoreLoading onComplete={handleLoadingComplete} />
@@ -107,7 +110,7 @@ export function BuzzApp() {
             {/* CTA and Calculate Buttons - Fixed at Bottom */}
             <div className="space-y-3 mb-4">
               <TransactionCTA className="w-full">
-                🎯 Join Creator Pool
+                Join Creator Pool
               </TransactionCTA>
 
               <button
@@ -168,7 +171,7 @@ export function BuzzApp() {
               boxShadow: '4px 4px 0px rgba(0,0,0,0.8)',
             }}
           >
-            🚀 Share Score
+            Share Score
           </button>
           <div className="flex-1">
             <DummyTransaction />

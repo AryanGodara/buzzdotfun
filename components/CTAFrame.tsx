@@ -1,11 +1,9 @@
 'use client'
 
 interface CTAFrameProps {
-  type: 'score' | 'waitlist'
+  type: 'score'
   score?: number
   userName?: string
-  waitlistPosition?: number
-  rate?: string
 }
 
 interface CTAFrameData {
@@ -21,23 +19,13 @@ export function CTAFrame({
   type,
   score = 78,
   userName = 'Creator',
-  waitlistPosition = Math.floor(Math.random() * 500) + 200,
-  rate = '9.5',
 }: CTAFrameProps) {
   const frameData: CTAFrameData = {
-    score: {
-      image: '/SCORE_CARD.png',
-      text: `Just calculated my Creator Score: ${score}/100! 🚀`,
-      subtext: 'beat my creator score',
-      embedUrl: MINIAPP_URL,
-    },
-    waitlist: {
-      image: `/api/waitlist-image?position=${waitlistPosition}&rate=${rate}&score=${score}`,
-      text: 'Join the waitlist for better loan rates! 💰',
-      subtext: 'get early access',
-      embedUrl: MINIAPP_URL,
-    },
-  }[type]
+    image: '/SCORE_CARD.png',
+    text: `Just calculated my Creator Score: ${score}/100!`,
+    subtext: 'beat my creator score',
+    embedUrl: MINIAPP_URL,
+  }
 
   return {
     text: frameData.text,
@@ -48,7 +36,7 @@ export function CTAFrame({
 }
 
 export function generateCTAFrameUrl(
-  type: 'score' | 'waitlist',
+  type: 'score',
   score?: number,
 ): string {
   const frame = CTAFrame({ type, score })
@@ -75,20 +63,7 @@ export function useCTAFrameShare() {
     }
   }
 
-  const shareWaitlistFrame = async () => {
-    const shareUrl = generateCTAFrameUrl('waitlist')
-
-    try {
-      const { sdk } = await import('@farcaster/miniapp-sdk')
-      await sdk.actions.openUrl(shareUrl)
-    } catch (error) {
-      console.error('Failed to compose cast with SDK:', error)
-      window.open(shareUrl, '_blank')
-    }
-  }
-
   return {
     shareScoreFrame,
-    shareWaitlistFrame,
   }
 }

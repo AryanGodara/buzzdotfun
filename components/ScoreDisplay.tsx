@@ -79,7 +79,7 @@ export function ScoreDisplay({
         <div className="space-y-2">
           <div className="flex items-center justify-between">
             <span className="text-xs text-white font-medium drop-shadow-lg">
-              🔥 Engagement
+              Engagement
             </span>
             <div className="flex items-center gap-2">
               <div className="w-16 h-2 bg-black/30 rounded-full border border-white/20">
