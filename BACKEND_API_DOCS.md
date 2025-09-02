@@ -262,6 +262,78 @@ const getLeaderboard = async () => {
 };
 ```
 
+## 🎨 NFT Metadata Endpoints
+
+### 4. Get NFT Metadata
+
+**Endpoint:** `GET /api/nft/metadata/:tokenId`
+
+**Description:** Serve OpenSea-compatible NFT metadata for Buzz Creator Score NFTs
+
+**Parameters:**
+
+- `tokenId` (path): NFT token ID (integer)
+
+**Response:**
+
+```json
+{
+  "name": "Buzz Creator Score #123",
+  "description": "Creator Score NFT for dwr.eth (FID: 3) with an overall score of 85/100...",
+  "image": "data:image/svg+xml;base64,PHN2Zy...",
+  "external_url": "https://buzzbase.fun/creator/3",
+  "attributes": [
+    {
+      "trait_type": "Overall Score",
+      "value": 85,
+      "max_value": 100
+    },
+    {
+      "trait_type": "Credit Tier",
+      "value": "AA"
+    },
+    // ... other attributes
+  ]
+}
+```
+
+### 5. Mint NFT Token
+
+**Endpoint:** `POST /api/nft/mint`
+
+**Description:** Store NFT token mapping when a new NFT is minted
+
+**Request Body:**
+
+```json
+{
+  "tokenId": 123,
+  "fid": 3,
+  "contractAddress": "0x...",
+  "ownerAddress": "0x..."
+}
+```
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "tokenId": 123,
+  "metadataUrl": "https://buzzfunbackend.buzzdotfun.workers.dev/api/nft/metadata/123"
+}
+```
+
+### 6. Get NFT Token Info
+
+**Endpoint:** `GET /api/nft/token/:tokenId`
+
+**Description:** Get NFT token information (debugging endpoint)
+
+**Parameters:**
+
+- `tokenId` (path): NFT token ID (integer)
+
 ## 🔒 Security & Rate Limits
 
 - **CORS:** Enabled for frontend domains
@@ -277,5 +349,5 @@ const getLeaderboard = async () => {
 
 ---
 
-*Last updated: August 31, 2025*
-*Backend version: 1.0.0*
+*Last updated: September 2, 2025*
+*Backend version: 1.1.0*

@@ -1,9 +1,9 @@
 # Unlock more powerful features than plain POSIX sh.
 SHELL := /bin/bash
 
-# add node_modules from one layer up
+# add node_modules from current directory
 ADD_PATH = $(eval PATH := $(if $(findstring :$(PATH_TO_ADD):,:$(PATH):),$(PATH),$(1):$(PATH)))
-$(call ADD_PATH , ../node_modules/.bin)
+$(call ADD_PATH , ./node_modules/.bin)
 
 # include .env file and export its env vars
 # (-include to ignore error if it does not exist)
@@ -39,22 +39,20 @@ METADATA_FLAG := $(if $(findstring false,$(APPEND_METADATA_$(CONFIG))),--no-meta
 
 # See README.md for more documentation.
 
-# Location of top-level node_modules relative to the contracts package.
-# We need the top-level on with Bun, because it leaves the package-specific ones empty.
-NODE_MODULES := ../node_modules
+# Location of node_modules in the current contracts directory.
+NODE_MODULES := ./node_modules
 
 # The reason for this weird setup is that the IntelliJ solidity plugin will not resolve imports
 # if they're not in `lib` and do not have a `src` directory (the `remappings.txt` file is ignored).
 setup:
 	if [ ! -f .env ]; then cp .env.example .env; fi
+	bun install
 	rm -rf lib
 	mkdir -p lib/{openzeppelin,oz-upgradeable}
-	ln $(LN_FLAGS) ../$(NODE_MODULES)/ExcessivelySafeCall lib/ExcessivelySafeCall
-	ln $(LN_FLAGS) ../$(NODE_MODULES)/solady lib/solady
-	ln $(LN_FLAGS) ../$(NODE_MODULES)/forge-std lib/forge-std
-	ln $(LN_FLAGS) ../$(NODE_MODULES)/@kevincharm/bls-bn254 lib/bls-bn254
-	ln $(LN_FLAGS) ../../$(NODE_MODULES)/@openzeppelin/contracts lib/openzeppelin/src
-	ln $(LN_FLAGS) ../../$(NODE_MODULES)/@openzeppelin/contracts-upgradeable lib/oz-upgradeable/src
+	ln $(LN_FLAGS) $$(pwd)/$(NODE_MODULES)/solady lib/solady
+	ln $(LN_FLAGS) $$(pwd)/$(NODE_MODULES)/forge-std lib/forge-std
+	ln $(LN_FLAGS) $$(pwd)/$(NODE_MODULES)/@openzeppelin/contracts lib/openzeppelin/src
+	ln $(LN_FLAGS) $$(pwd)/$(NODE_MODULES)/@openzeppelin/contracts-upgradeable lib/oz-upgradeable/src
 
 .PHONY: setup
 
@@ -278,6 +276,10 @@ define set-chain-name
 		CHAIN_NAME = sepolia
 	else ifeq ($(CHAIN_ID),1)
 		CHAIN_NAME = ethereum
+	else ifeq ($(CHAIN_ID),8453)
+		CHAIN_NAME = base
+	else ifeq ($(CHAIN_ID),84532)
+		CHAIN_NAME = base-sepolia
 	else
 		CHAIN_NAME = unknown
 	endif
@@ -323,6 +325,11 @@ deploy-random: ## Deploys the randomness contracts and saves the deployment.
 	$(eval $(call set-deployment-name,random))
 	make deploy DEPLOY_SCRIPT=DeployRandom.s.sol
 .PHONY: deploy-random
+
+deploy-buzz-nft: ## Deploys the Buzz Creator NFT contract
+	$(eval $(call set-deployment-name,buzz-nft))
+	make deploy DEPLOY_SCRIPT=DeployBuzzNFT.s.sol
+.PHONY: deploy-buzz-nft
 
 deploy-all: deploy-boop deploy-mocks deploy-random ## Deploys random, mock and boop contracts
 .PHONY: deploy-all

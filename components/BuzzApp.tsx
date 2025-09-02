@@ -11,7 +11,7 @@ import { BottomNavigation } from '@/components/BottomNavigation'
 import { useCreatorScore } from '@/components/CreatorScoreProvider'
 import { useCTAFrameShare } from '@/components/CTAFrame'
 import { DummyTransaction } from '@/components/DummyTransaction'
-import { TransactionCTA } from '@/components/TransactionCTA'
+import { MintCreatorNFT } from '@/components/MintCreatorNFT'
 import Navbar from '@/components/Home/Navbar'
 import { UserProfile } from '@/components/UserProfile'
 import { sdk } from '@farcaster/miniapp-sdk'
@@ -109,9 +109,9 @@ export function BuzzApp() {
 
             {/* CTA and Calculate Buttons - Fixed at Bottom */}
             <div className="space-y-3 mb-4">
-              <TransactionCTA className="w-full">
-                Join Creator Pool
-              </TransactionCTA>
+              <MintCreatorNFT className="w-full">
+                Mint Creator NFT
+              </MintCreatorNFT>
 
               <button
                 type="button"

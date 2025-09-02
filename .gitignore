@@ -3,6 +3,9 @@
 # dependencies
 /node_modules
 /contracts/node_modules
+/contracts/out
+/contracts/lib
+/contracts/cache
 
 /.pnp
 .pnp.js
